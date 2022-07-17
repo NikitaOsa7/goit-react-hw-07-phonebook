@@ -27,6 +27,5 @@ export default function ContactItem({ id, name, number }) {
 ContactItem.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    number: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func.isRequired,
+    number: PropTypes.string,
 }
