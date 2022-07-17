@@ -1,31 +1,26 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { addCotnacts } from '../../redux/contacts/slice';
-import { getContacts } from '../../redux/contacts/contactsApi'
+import { useAddContactMutation, useGetContactsQuery } from '../../redux/contacts/contactsApi'
 import { nanoid } from 'nanoid';
 
 
-export default function ContactForm({ formSubmitHandler }) {
+export default function ContactForm() {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
 
-    const dispatch = useDispatch();
-    const contacts = useSelector(getContacts);
+    const { data } = useGetContactsQuery();
+    const [addCotnacts] = useAddContactMutation();
 
 
     const handleSumbit = e => {
         e.preventDefault();
-        contacts.some(contact => contact.name === name)
+        data.some(contact => contact.name === name)
             ? alert(`${name} is already in contacts`)
-            : dispatch(
-                addCotnacts({
-                    id: nanoid(),
-                    name: name,
-                    number: number,
-                })
-            );
+            : addCotnacts({
+                id: nanoid(),
+                name: name,
+                number: number,
+            });
         
         setName('');
         setNumber('');
@@ -81,7 +76,3 @@ export default function ContactForm({ formSubmitHandler }) {
     );
 
 }
-
-ContactForm.propTypes = {
-    formSubmitHandler: PropTypes.func.isRequired
-};

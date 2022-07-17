@@ -1,13 +1,12 @@
+import PropTypes from 'prop-types';
 import ContactItem from '../ContactItem/ContactItem'
 import s from './ContactList.module.css';
-import { getContacts, getFilter } from '../../redux/contacts/contactsApi';
-import { useSelector } from 'react-redux';
+import {useGetContactsQuery } from '../../redux/contacts/contactsApi';
 
-export default function ContactList() {
-    const contacts = useSelector(getContacts);
-    const filter = useSelector(getFilter);
+export default function ContactList({ filter }) {
+    const { data } = useGetContactsQuery();
 
-    const filteredContacts = contacts.filter(contact =>
+    const filteredContacts = data?.filter(contact =>
         contact.name.toLowerCase().includes(filter.toLowerCase())
     );
     
@@ -16,12 +15,9 @@ export default function ContactList() {
         return (
         
             <ul>
-                {contacts.map(({ id, name, number }) => (
+                {filteredContacts.map(({ id, name, number }) => (
                     <li className={s.li} key={id}>
-                        <ContactItem
-                            id={id}
-                            name={name}
-                            number={number}
+                        <ContactItem id={id} name={name} number={number}
                         />
                     </li>
                 ))}
@@ -30,6 +26,9 @@ export default function ContactList() {
     }
 }
 
+ContactList.propTypes = {
+  filter: PropTypes.string.isRequired,
+};
 
 
 
