@@ -1,67 +1,77 @@
 import { useState } from 'react';
 import {
-  useAddContactMutation,
   useGetContactsQuery,
-} from '../../redux/services';
-
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+  useAddContactMutation,
+} from 'redux/contacts/contactsApi';
 import s from './ContactForm.module.css';
 
 export default function ContactForm() {
-  const [params, setParams] = useState({ name: '', phone: '' });
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
+  const { data } = useGetContactsQuery();
   const [addContact] = useAddContactMutation();
-  const { data: contacts } = useGetContactsQuery();
 
-  const handleChange = e => {
-    const { name, value } = e.currentTarget;
-    setParams({ ...params, [name]: value });
-  };
-
-  function handleSubmit(e) {
+  const handleSubmit = e => {
     e.preventDefault();
-    contacts.some(contact => contact.name === params.name)
-      ? Notify.failure(`Contact ${params.name} already exists`)
-      : newContact();
-  }
 
-  const newContact = () => {
-    addContact(params);
-    Notify.info(`Contact ${params.name} added to phone book`);
-    reset();
+    data.some(contact => contact.name === name)
+      ? alert(`${name} is already in contacts`)
+      : addContact({
+          name: name,
+          phone: number,
+        });
+
+    setName('');
+    setNumber('');
   };
 
-  const reset = () => {
-    setParams({ name: '', phone: '' });
+  const handleChange = evt => {
+    const { name, value } = evt.target;
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+
+      case 'number':
+        setNumber(value);
+        break;
+
+      default:
+        break;
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
+    <form className={s.form} onSubmit={handleSubmit}>
+      <label className={s.label}>
         Name
         <input
+          className={s.input}
           type="text"
           name="name"
-          value={params.name}
-          onChange={handleChange}
+          value={name}
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          onChange={handleChange}
           required
         />
       </label>
-      <label>
-        Phone number
+      <label className={s.label}>
+        Number
         <input
+          className={s.input}
           type="tel"
-          name="phone"
-          value={params.phone}
-          onChange={handleChange}
+          name="number"
+          value={number}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          onChange={handleChange}
           required
         />
       </label>
-      <button type="submit" className={s.submitButton}>
+
+      <button className={s.button} type="submit">
         Add contact
       </button>
     </form>

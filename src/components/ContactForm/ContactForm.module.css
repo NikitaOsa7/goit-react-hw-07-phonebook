@@ -1,17 +1,21 @@
-input {
-  display: block;
-  width: 250px;
-  height: 30px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 40%;
+  border: solid black 1px;
 }
 
-.submitButton {
-  margin-left: auto;
-  margin-right: auto;
-  width: 400px;
-  height: 30px;
-  text-transform: uppercase;
-  border-radius: 4px;
-  background-color: #778899;
+.label {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  margin: 5px 0 15px;
+  width: 200px;
+}
+
+.button {
+  width: fit-content;
 }

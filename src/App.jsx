@@ -1,16 +1,22 @@
-import ContactForm from './components/ContactForm';
-import ContactList from './components/ContactList';
-import Filter from './components/Filter';
-import * as React from 'react';
+import ContactList from 'components/ContactList/ContactList';
+import Filter from 'components/Filter/Filter';
+import ContactForm from 'components/ContactForm/ContactForm';
+import { useState } from 'react';
 
 export default function App() {
+  const [filter, setFilter] = useState('');
+
+  const handleChange = e => {
+    setFilter(e);
+  };
+
   return (
-    <>
+    <div>
       <h1>Phonebook</h1>
       <ContactForm />
-      <h1>Contacts</h1>
-      <Filter />
-      <ContactList />
-    </>
+      <h2>Contacts</h2>
+      <Filter filter={filter} handleChange={handleChange} />
+      <ContactList filter={filter} />
+    </div>
   );
 }
