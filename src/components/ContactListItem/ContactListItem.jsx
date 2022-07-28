@@ -3,16 +3,22 @@ import s from './ContactListItem.module.css';
 import { useDeleteContactMutation } from 'redux/contactSlice';
 
 const ContactListItem = ({ id, name, number }) => {
-  const [onDeleteContact] = useDeleteContactMutation();
+  const [onDeleteContact, { isLoading: isDeleting }] = useDeleteContactMutation();
 
   return (
     <li key={id} className={s.listContacts}>
       <p>
         {name}: {number}
       </p>
-      <button className={s.listBtn} onClick={() => onDeleteContact(id)}>
-        Delete
+      <button
+        name={name}
+        type="submit"
+        disabled={isDeleting}
+        className={s.listBtn}
+        onClick={() => onDeleteContact(id)}>
+        {isDeleting ? 'Deleting...' : 'Delete'}
       </button>
+      
     </li>
   );
 };
