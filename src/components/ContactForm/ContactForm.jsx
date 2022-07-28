@@ -1,77 +1,67 @@
-import { useState } from 'react';
-import {
-  useGetContactsQuery,
-  useAddContactMutation,
-} from 'redux/contacts/contactsApi';
+import React from 'react';
 import s from './ContactForm.module.css';
+import { nanoid } from 'nanoid';
+import { useState } from 'react';
+import Notiflix from 'notiflix';
+import {
+  useCreateContactMutation,
+  useGetContactsQuery,
+} from 'redux/contactSlice';
 
-export default function ContactForm() {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+export default function Form() {
+  const [params, setParams] = useState({
+    id: nanoid(10),
+    name: '',
+    phone: '',
+  });
+  const [createContact] = useCreateContactMutation();
+  const { data: contacts } = useGetContactsQuery();
 
-  const { data } = useGetContactsQuery();
-  const [addContact] = useAddContactMutation();
+  const handleInputChange = e => {
+    setParams({ ...params, [e.currentTarget.name]: e.currentTarget.value });
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
-
-    data.some(contact => contact.name === name)
-      ? alert(`${name} is already in contacts`)
-      : addContact({
-          name: name,
-          phone: number,
-        });
-
-    setName('');
-    setNumber('');
-  };
-
-  const handleChange = evt => {
-    const { name, value } = evt.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'number':
-        setNumber(value);
-        break;
-
-      default:
-        break;
-    }
+    if (contacts.some(contact => contact.name.includes(params.name))) {
+      Notiflix.Notify.failure(`Contact ${params.name} is already exist`);
+    } else if (contacts.some(contact => contact.phone.includes(params.phone))) {
+      Notiflix.Notify.failure(`phone ${params.phone} is already exist`);
+    } else createContact(params);
+    console.log(params);
+    setParams({ id: nanoid(10), name: '', phone: '' });
   };
 
   return (
-    <form className={s.form} onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={s.form}>
       <label className={s.label}>
+        {' '}
         Name
         <input
+          autoComplete="off"
           className={s.input}
+          onChange={handleInputChange}
+          value={params.name}
           type="text"
           name="name"
-          value={name}
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          onChange={handleChange}
           required
         />
-      </label>
-      <label className={s.label}>
         Number
         <input
+          autoComplete="off"
           className={s.input}
+          onChange={handleInputChange}
+          value={params.phone}
           type="tel"
-          name="number"
-          value={number}
+          name="phone"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          onChange={handleChange}
           required
         />
       </label>
-
-      <button className={s.button} type="submit">
+      <button className={s.btnSubmit} type="submit">
         Add contact
       </button>
     </form>
