@@ -1,5 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { changeFilter } from './actions';
+import { createAction } from '@reduxjs/toolkit';
+
+export const changeFilter = createAction('phonebook/filter');
 
 const filter = createReducer('', {
   [changeFilter]: (_, { payload }) => payload,
